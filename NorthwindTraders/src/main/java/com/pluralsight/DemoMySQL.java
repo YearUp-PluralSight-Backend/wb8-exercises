@@ -12,17 +12,10 @@ public class DemoMySQL {
 
     public static void main(String[] args)  {
 
-        Connection connection = getConnection();
+        Connection connection = getConnection(args[0], args[1]);
 
         if (connection == null) {
             System.out.println("Connection is null");
-            return;
-        }
-
-        Statement statement = createStatement(connection);
-
-        if (statement == null) {
-            System.out.println("Statement is null");
             return;
         }
 
@@ -45,26 +38,6 @@ public class DemoMySQL {
 
     }
 
-    public static ResultSet queryDB(Statement statement, String query) {
-        try {
-            return statement.executeQuery(query);
-        } catch (SQLException e) {
-            System.out.println("Error executing query: " + e.getMessage());
-        }
-
-        return null;
-    }
-
-    public static Statement createStatement(Connection connection) {
-        try {
-            return connection.createStatement();
-        } catch (SQLException e) {
-            System.out.println("Error creating statement" + e.getMessage());
-        }
-
-        return null;
-    }
-
     public static ResultSet createPreparedStatement(Connection connection, String query) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -77,7 +50,7 @@ public class DemoMySQL {
     }
 
 
-    public static Connection getConnection() {
+    public static Connection getConnection(String user, String password) {
         try {
             Class.forName(DRIVER_NAME);
             return DriverManager.getConnection(URL + DB_NAME, USER, PASSWORD);
