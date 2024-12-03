@@ -60,14 +60,9 @@ public class DemoMySQLThree {
 
     public static void displayAllProducts() {
         String query = "SELECT * FROM products ORDER BY ProductID";
-        try (Connection connection = getConnection()) {
+        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet resultSet = preparedStatement.executeQuery()) {
             assert connection != null;
-            PreparedStatement preparedStatement = null;
-            ResultSet resultSet = null;
             try {
-                preparedStatement = connection.prepareStatement(query);
-                resultSet = preparedStatement.executeQuery();
-
                 if (resultSet == null) {
                     System.out.println("Result set is null");
                     return;
