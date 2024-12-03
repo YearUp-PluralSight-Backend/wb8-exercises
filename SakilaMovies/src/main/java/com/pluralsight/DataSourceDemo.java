@@ -4,8 +4,11 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDateTime;
 
-public class DemoMySQLFive {
+import static com.pluralsight.utils.Utility.getInput;
+
+public class DataSourceDemo {
 
     private static final String DRIVER_NAME = "com.mysql.cj.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost:3306/";
@@ -22,27 +25,44 @@ public class DemoMySQLFive {
         return dataSource;
     }
     public static void main(String[] args) {
+        String sql = "select * from actor where last_name = '" + getInput("Last name of your favorite actor: ") + "'";
+        query(sql);
+    }
 
-        String query = "SELECT * FROM products";
+    public static void query(String sql) {
         try (Connection connection = getConnection()) {
             assert connection != null;
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
-
-                if (resultSet == null) {
-                    System.out.println("Result set is null");
-                    return;
-                }
-
-                printHeader();
+            try (Statement statement = connection.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                printHeaderActors();
+                int id = 0;
                 while (resultSet.next()) {
-                    int productID = resultSet.getInt("ProductID");
-                    String productName = resultSet.getString("ProductName");
-                    double unitPrice = resultSet.getDouble("UnitPrice");
-                    double unitsInStock = resultSet.getDouble("UnitsInStock");
+                    id = resultSet.getInt("actor_id");
+                    String name = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
+                    LocalDateTime lastUpdate = resultSet.getTimestamp("last_update").toLocalDateTime();
+                    String output = String.format("%-5d %-15s %-8s", id, name, lastUpdate);
+                    System.out.println(output);
 
-                    String info = String.format("%-5d %-35s %-8.2f %-8.2f", productID, productName, unitPrice, unitsInStock);
-                    System.out.println(info);
+                }
+                String query =
+                        """
+                        select * from film where film_id in (
+                            select film_id from film_actor
+                            where actor_id = %d
+                        )
+                        """.formatted(id);
+                System.out.println("\nFilms:");
+                try (Statement statement2 = connection.createStatement();
+                     ResultSet resultSet2 = statement2.executeQuery(query)) {
+                    printHeaderFilms();
+                    while (resultSet2.next()) {
+                        int filmId = resultSet2.getInt("film_id");
+                        String title = resultSet2.getString("title");
+                        String description = resultSet2.getString("description");
+                        LocalDateTime lastUpdate = resultSet2.getTimestamp("last_update").toLocalDateTime();
+                        String output = String.format("%-5d %-25s %-120s %-10s", filmId, title, description, lastUpdate);
+                        System.out.println(output);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -50,19 +70,25 @@ public class DemoMySQLFive {
         }
     }
 
-    public static void printHeader() {
-        String header = String.format("%-5s %-35s %-8s %-8s", "ID", "Name", "Price", "Stock");
+    public static void printHeaderActors() {
+        String header = String.format("%-15s %-15s %-8s", "ID", "Name", "Last Update");
         System.out.println(header);
         System.out.println("--".repeat(30));
     }
 
+    public static void printHeaderFilms() {
+        String header = String.format("%-5s %-25s %-120s %-10s", "ID", "Title", "Description", "Last Update");
+        System.out.println(header);
+        System.out.println("---".repeat(60));
+    }
+
     public static Connection getConnection() {
+        DataSource dataSource = getDataSource("sakila", USER, PASSWORD);
         try {
-            Class.forName(DRIVER_NAME);
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (ClassNotFoundException | SQLException e) {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
+            return null;
         }
-        return null;
     }
 }
