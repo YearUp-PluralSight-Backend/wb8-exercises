@@ -15,7 +15,6 @@ public class DataSourceDemo {
     private static final String USER = System.getenv("MYSQL_ROOT_USER");
     private static final String PASSWORD = System.getenv("MYSQL_ROOT_PASSWORD");
 
-
     public static DataSource getDataSource(String database, String user, String password) {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(DRIVER_NAME);

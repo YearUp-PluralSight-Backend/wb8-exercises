@@ -1,17 +1,21 @@
 package com.pluralsight.model;
 
+import java.time.LocalDateTime;
+
 public class Actor {
 
     private int actorId;
     private String firstName;
     private String lastName;
+    private LocalDateTime lastUpdate;
 
     public Actor() {
     }
-    public Actor(int actorId, String firstName, String lastName) {
+    public Actor(int actorId, String firstName, String lastName, LocalDateTime lastUpdate) {
         this.actorId = actorId;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.lastUpdate = lastUpdate;
     }
 
     public int getActorId() {
@@ -38,12 +42,16 @@ public class Actor {
         this.lastName = lastName;
     }
 
+    public LocalDateTime getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(LocalDateTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
     @Override
     public String toString() {
-        return "Actor{" +
-                "actorId=" + actorId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
+        return String.format("%-5d %-20s %-8s", actorId, firstName + " " + lastName, lastUpdate);
     }
 }

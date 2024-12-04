@@ -25,4 +25,17 @@ public class Utility {
 
         return null;
     }
+
+
+    public static void printHeaderActors() {
+        String header = String.format("%-15s %-15s %-8s", "ID", "Name", "Last Update");
+        System.out.println(header);
+        System.out.println("--".repeat(30));
+    }
+
+    public static void printHeaderFilms() {
+        String header = String.format("%-5s %-25s %-120s %-10s", "ID", "Title", "Description", "Last Update");
+        System.out.println(header);
+        System.out.println("---".repeat(60));
+    }
 }

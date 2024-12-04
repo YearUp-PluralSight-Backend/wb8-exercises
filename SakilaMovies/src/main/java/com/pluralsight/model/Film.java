@@ -1,4 +1,4 @@
-package com.pluralsight;
+package com.pluralsight.model;
 
 public class Film {
 
@@ -6,13 +6,13 @@ public class Film {
     private String title;
     private String description;
     private int releaseYear;
-    private double length;
+    private int length;
 
 
     public Film() {
     }
 
-    public Film(int filmId, String title, String description, int releaseYear, double length) {
+    public Film(int filmId, String title, String description, int releaseYear, int length) {
         this.filmId = filmId;
         this.title = title;
         this.description = description;
@@ -56,18 +56,12 @@ public class Film {
         return length;
     }
 
-    public void setLength(double length) {
+    public void setLength(int length) {
         this.length = length;
     }
 
     @Override
     public String toString() {
-        return "Film{" +
-                "filmId=" + filmId +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", releaseYear=" + releaseYear +
-                ", length=" + length +
-                '}';
+        return String.format("%-5d %-25s %-130s %-10d %-10d", filmId, title, description, releaseYear, length);
     }
 }
